@@ -13,7 +13,15 @@ const router = new express.Router();
 /** Homepage: show list of customers. */
 
 router.get("/", async function (req, res, next) {
-  const customers = await Customer.all();
+  const searchQuery = req.query.search;
+  let customers;
+  //debugger;
+  if(searchQuery){
+    customers = await Customer.search(searchQuery);
+  }else{
+    customers = await Customer.all();
+  }
+
   return res.render("customer_list.html", { customers });
 });
 
