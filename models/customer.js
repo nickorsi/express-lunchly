@@ -35,7 +35,7 @@ class Customer {
 
   static async search(searchQuery) {
     const [query1, query2] = searchQuery.split(" ");
-
+    //TODO: Look at serach on solution to make a more flexible search query
     const results = await db.query(
           `SELECT id,
                   first_name AS "firstName",
@@ -49,17 +49,20 @@ class Customer {
             last_name iLIKE '%'||$1||'%' OR
             last_name iLIKE '%'||$2||'%'
           ORDER BY last_name, first_name`,
-          [query1, query2]
+          [`%${query1}%`, query2]
+          //TODO: Have wild card in the array rather than in query
     );
     return results.rows.map(c => new Customer(c));
   }
 
   /** Get TOP 10 Customers by # of reservations. */
-
+  //TODO: Rename to getTopTenCustomers to better match the query response
   static async getTopCustomers() {
-
+    console.log("In getTopCustomers")
+    debugger;
     const results = await db.query(
       `SELECT
+        customers.id,
         customers.first_name AS "firstName",
         customers.last_name AS "lastName",
         customers.phone,
@@ -71,7 +74,7 @@ class Customer {
           reservations.customer_id = customers.id
 
       GROUP BY
-          reservations.customer_id,
+          customers.id,
           customers.first_name,
           customers.last_name,
           customers.phone,
@@ -79,10 +82,18 @@ class Customer {
       ORDER BY COUNT(reservations.customer_id) DESC
       LIMIT 10;`
     );
+      //TODO: Could take out all the 78-81, not needed in postgreSQL but would
+      //be needed in other db that are more strict
 
-    return results.rows.map((c) => {
-      new Customer(c)
-    });
+    return results.rows.map((c) =>
+       new Customer({
+        id: c.id,
+        firstName: c.firstName,
+        lastName: c.lastName,
+        phone: c.phone,
+        notes: c.notes
+      })
+    );
     //TODO: show # of reservations for each customer
   }
 
@@ -147,7 +158,7 @@ class Customer {
   }
 
   /** get customer full name */
-
+  //TODO: Could just return the string rather than named variable
   fullName() {
     const fullName = `${this.firstName} ${this.lastName}`;
     return fullName;

@@ -44,6 +44,13 @@ router.post("/add/", async function (req, res, next) {
   return res.redirect(`/${customer.id}/`);
 });
 
+/** Get top ten customers */
+
+router.get("/top-ten/", async function (req, res, next) {
+  const customers = await Customer.getTopCustomers();
+  return res.render('top_customers.html', { customers })
+});
+
 /** Show a customer, given their ID. */
 
 router.get("/:id/", async function (req, res, next) {
