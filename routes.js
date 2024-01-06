@@ -15,7 +15,7 @@ const router = new express.Router();
 router.get("/", async function (req, res, next) {
   const searchQuery = req.query.search;
   let customers;
-  debugger;
+  //debugger;
   if(searchQuery){
     customers = await Customer.search(searchQuery);
   }else{

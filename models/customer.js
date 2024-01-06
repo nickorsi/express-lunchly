@@ -54,6 +54,38 @@ class Customer {
     return results.rows.map(c => new Customer(c));
   }
 
+  /** Get TOP 10 Customers by # of reservations. */
+
+  static async getTopCustomers() {
+
+    const results = await db.query(
+      `SELECT
+        customers.first_name AS "firstName",
+        customers.last_name AS "lastName",
+        customers.phone,
+        customers.notes,
+        COUNT(reservations.customer_id) AS "reservationCount"
+      FROM reservations
+
+      JOIN customers on
+          reservations.customer_id = customers.id
+
+      GROUP BY
+          reservations.customer_id,
+          customers.first_name,
+          customers.last_name,
+          customers.phone,
+          customers.notes
+      ORDER BY COUNT(reservations.customer_id) DESC
+      LIMIT 10;`
+    );
+
+    return results.rows.map((c) => {
+      new Customer(c)
+    });
+    //TODO: show # of reservations for each customer
+  }
+
   /** get a customer by ID. */
 
   static async get(id) {
